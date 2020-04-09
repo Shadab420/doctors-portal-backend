@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
-app.use(bodyParser());
+app.use(bodyParser.json());
 
 const port = process.env.PORT;
 const uri = process.env.DB_PATH;
@@ -116,6 +116,7 @@ app.post('/addAppointment', (req, res) => {
     //     doctorId,
     //     patientEmail,
     //     patientName,
+    //     patientToken,
     //     phone,
     //     visitingDate,
             // isApproved,
