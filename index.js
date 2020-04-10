@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectID  } = require("mongodb");
 require('dotenv').config();
 
 const app = express();
@@ -84,6 +84,212 @@ app.get('/appointments', (req, res) => {
     });
 })
 
+//get appointments by date
+app.get('/appointments/:appdate', (req,res) => {
+    const appDate = req.params.appdate;
+    console.log(req.params);
+    
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("appointments");
+        // perform actions on the collection object
+        collection.find({appointmentDate: appDate }).toArray((err, documents) => {
+           if(err) {
+               console.log(err);
+               res.status(500).send({message: err.message});
+           }
+           else{
+               res.status(200).send(documents);
+           } 
+            
+        })
+        client.close();
+    });
+})
+
+
+//add an schedule
+app.post('/addSchedule', (req, res) => {
+    const schedule = req.body;
+
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("schedules");
+
+        // perform actions on the collection object
+        collection.insertOne(schedule, (err, documents) => {
+           if(err) {
+               console.log(err);
+               res.status(500).send({message: err.message});
+           }
+           else{
+               res.status(200).send(documents.ops[0]);
+           } 
+            
+        })
+        client.close();
+    });
+})
+
+//get all prescriptions
+
+app.get('/prescriptions', (req, res) => {
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("prescriptions");
+
+        // perform actions on the collection object
+        collection.find().toArray((err, documents) => {
+           if(err) {
+               console.log(err);
+               res.status(500).send({message: err.message});
+           }
+           else{
+               res.status(200).send(documents);
+           } 
+            
+        })
+        client.close();
+    });
+})
+
+
+//get appointments by date
+app.get('/appointments/:appdate', (req,res) => {
+    const appDate = req.params.appdate;
+    console.log(req.params);
+    
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("appointments");
+        // perform actions on the collection object
+        collection.find({appointmentDate: appDate }).toArray((err, documents) => {
+           if(err) {
+               console.log(err);
+               res.status(500).send({message: err.message});
+           }
+           else{
+               res.status(200).send(documents);
+           } 
+            
+        })
+        client.close();
+    });
+})
+
+//update appointment status
+app.put('/appointmentStatus/:id', (req, res) => {
+    
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("appointments");
+
+        // perform actions on the collection object
+        collection.findOneAndUpdate(
+            { _id: new ObjectID(req.params.id)}, {$set: { pending: false}}, {
+            returnOriginal: false, 
+            upsert: true
+        },
+            
+            (err, documents) => {
+                if(err) {
+                    console.log(err);
+                    res.status(500).send({message: err.message});
+                }
+                else{
+                    res.status(200).send(documents.value);
+                } 
+            
+        })
+        client.close();
+    });
+  })
+
+
+  //update appointment prescription status
+app.put('/appointmentStatus/:id', (req, res) => {
+    
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("appointments");
+
+        // perform actions on the collection object
+        collection.findOneAndUpdate(
+            { _id: new ObjectID(req.params.id)}, {$set: { prescription: true}}, {
+            returnOriginal: false, 
+            upsert: true
+        },
+            
+            (err, documents) => {
+                if(err) {
+                    console.log(err);
+                    res.status(500).send({message: err.message});
+                }
+                else{
+                    res.status(200).send(documents.value);
+                } 
+            
+        })
+        client.close();
+    });
+  })
+
+//add an schedule
+app.post('/addSchedule', (req, res) => {
+    const schedule = req.body;
+
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("schedules");
+
+        // perform actions on the collection object
+        collection.insertOne(schedule, (err, documents) => {
+           if(err) {
+               console.log(err);
+               res.status(500).send({message: err.message});
+           }
+           else{
+               res.status(200).send(documents.ops[0]);
+           } 
+            
+        })
+        client.close();
+    });
+})
+
+//get appointments by date
+app.get('/appointments/:appdate', (req,res) => {
+    const appDate = req.params.appdate;
+    console.log(req.params);
+    
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(err => {
+        const collection = client.db("doctorsPortal").collection("appointments");
+        // perform actions on the collection object
+        collection.find({appointmentDate: appDate }).toArray((err, documents) => {
+           if(err) {
+               console.log(err);
+               res.status(500).send({message: err.message});
+           }
+           else{
+               res.status(200).send(documents);
+           } 
+            
+        })
+        client.close();
+    });
+})
+
+
+
 //add an schedule
 app.post('/addSchedule', (req, res) => {
     const schedule = req.body;
@@ -112,17 +318,6 @@ app.post('/addSchedule', (req, res) => {
 app.post('/addAppointment', (req, res) => {
     const appointment = req.body;
 
-    // const appointment = {
-    //     doctorId,
-    //     patientEmail,
-    //     patientName,
-    //     patientToken,
-    //     phone,
-    //     visitingDate,
-            // isApproved,
-            // prescription, 
-    // }
-
     const client = new MongoClient(uri, { useNewUrlParser: true });
 
     client.connect(err => {
@@ -143,12 +338,16 @@ app.post('/addAppointment', (req, res) => {
     });
 })
 
-//add a prescription for a patiend
+//add a prescription for a patient
 app.post('/addPrescription', (req, res) => {
     const prescription = req.body;
 
     // const prescription = {
-    //     patientid,
+    //     patient
+    //      doctor
+    //     phone
+    //     appDate
+    //      department
     //     prescription
     // }
 
